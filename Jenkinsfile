@@ -1,36 +1,31 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_NAME = "cloudkart"
-        CONTAINER_NAME = "cloudkart"
-    }
-
     stages {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/cloudkart-app.git'
+                git url: 'https://github.com/MADHU8912/cloudkart-app.git', credentialsId: 'github-creds'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t cloudkart ./backend'
+                bat 'docker build -t cloudkart ./backend'
             }
         }
 
         stage('Stop Old Container') {
             steps {
-                sh 'docker rm -f cloudkart || true'
+                bat 'docker rm -f cloudkart || exit 0'
             }
         }
 
         stage('Run Container') {
             steps {
-                sh '''
-                docker run -d -p 5000:5000 \
-                -e MONGO_URI="mongodb+srv://username:password@cluster.mongodb.net/cloudkart" \
+                bat '''
+                docker run -d -p 5000:5000 ^
+                -e MONGO_URI="mongodb+srv://username:password@cluster.mongodb.net/cloudkart" ^
                 --name cloudkart cloudkart
                 '''
             }
